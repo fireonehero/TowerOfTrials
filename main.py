@@ -1,7 +1,5 @@
 import random
 
-import random
-
 def start_game():
     global quit_game, exp, level, enemies_defeated, player_attack, player_health, player_max_health, enemy_base_attack, enemy_base_health, is_new_enemy
 
@@ -14,7 +12,7 @@ def start_game():
     player_max_health = 100
     enemy_base_attack = 5
     enemy_base_health = 50
-    is_new_enemy = True
+    is_new_enemy = False
 
     spawn_enemy()
 
@@ -22,13 +20,13 @@ def start_game():
         print(user_menu)
         user_choice = int(input("What is your selection: "))
         if user_choice == 1:
-            attack_move(player_attack)
             is_new_enemy = False
-            if enemy_health > 0 and quit_game == False and not is_new_enemy:
+            attack_move(player_attack)
+            if enemy_health > 0 and quit_game == False and is_new_enemy == False:
                 enemy_attack_move()
         elif user_choice == 2:
-            use_shield()
             is_new_enemy = False
+            use_shield()
             if enemy_health > 0 and quit_game == False and not is_new_enemy:
                 enemy_attack_move()
         elif user_choice == 3:
