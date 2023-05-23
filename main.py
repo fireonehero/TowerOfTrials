@@ -74,7 +74,7 @@ class Player:
             self.player_death()
 
     def show_stats(self):
-        print(f"\nPlayer stats:\nLevel: {self.level}\nExp: {self.exp}\nHealth: {self.player_health}\n")
+        print(f"\nPlayer stats:\nLevel: {self.level}\nExp: {self.exp}\nHealth: {self.player_health}\nAttack: {self.player_attack}\n")
 
     def use_shield(self):
         self.player_health += 15
