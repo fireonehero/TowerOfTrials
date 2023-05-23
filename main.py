@@ -1,5 +1,8 @@
 import random
 
+boss_list = ["Minotaur", "Dragon", "Lich", "Ancient God", "Demon King", "Fallen Hero"]
+enemy_list = ["GorgonZola", "Goblin", "Orc", "Troll", "Imp", "Banshee", "Skeleton", "Zombie"]
+
 class Player:
     def __init__(self, username, player_class):
         self.username = username
@@ -11,43 +14,24 @@ class Player:
         self.player_attack = 10
         self.player_health = 100
         self.player_max_health = 100
-        self.potions = 3
-        self.is_new_enemy = False
         self.enemy_base_attack = 5
         self.enemy_base_health = 50
-        self.enemy_list = ["GorgonZola", "Vampire", "Chimera", "Hydra", "Zombie", "Banshee", "Bogeyman"]
-        self.boss_list = ["Dragon", "Lich King", "Demon Lord", "Ancient God"]
-        self.class_benefits()
-
-    def class_benefits(self):
-        if self.player_class == "Mage":
-            self.player_attack += 5
-        elif self.player_class == "Warrior":
-            self.player_max_health += 50
+        self.is_new_enemy = False
+        self.inventory = {'Potion': 0}
+        if player_class == "Warrior":
             self.player_health += 50
-        elif self.player_class == "Rogue":
-            self.potions += 2
-
-    def show_menu(self):
-        print("""
-        ######################################
-        1 : Attack\t\t2 : Shield
-        3 : Stats\t\t4 : Use Potion
-        5 : Quit
-        ######################################
-        """)
-
-    def story(self):
-        print(f"\n{self.username}, a brave {self.player_class} is on a quest to defeat the legendary creatures that inhabit the Tower of Trials. "
-            "\nEvery 10th enemy in the tower is a powerful boss, but don't fear! With each enemy defeated, you gain experience and can choose to increase your attack or maximum health."
-            "\nYou also have a shield that can be used to restore health, and potions that can boost your abilities. Good luck!\n")
+            self.player_max_health += 50
+        elif player_class == "Mage":
+            self.player_attack += 5
+        elif player_class == "Rogue":
+            self.inventory['Potion'] += 3
+        self.enemy_name, self.enemy_attack, self.enemy_health = None, None, None
 
     def attack_move(self):
         self.enemy_health -= self.player_attack
         print(f"Enemy's health: {self.enemy_health}")
         if self.enemy_health <= 0:
             self.enemy_killed()
-            self.spawn_enemy()
 
     def enemy_killed(self):
         exp_add = random.randrange(1, 20)
@@ -55,19 +39,22 @@ class Player:
         self.exp += exp_add
         self.enemies_defeated += 1
         self.level_up()
+        if not self.quit_game:
+            self.spawn_enemy()
 
     def spawn_enemy(self):
         self.is_new_enemy = True
         if self.enemies_defeated % 10 == 0 and self.enemies_defeated != 0:
-            self.enemy_name = random.choice(self.boss_list)
+            self.enemy_name = random.choice(boss_list)
             self.enemy_attack = 15
             self.enemy_health = 100
             print(f"{self.username} is now fighting a boss: {self.enemy_name}!")
             self.enemy_base_attack += 2
             self.enemy_base_health += 10
             print("The enemies have gotten slightly stronger!")
+            self.add_potion()
         else:
-            self.enemy_name = random.choice(self.enemy_list)
+            self.enemy_name = random.choice(enemy_list)
             self.enemy_attack = self.enemy_base_attack
             self.enemy_health = self.enemy_base_health
         print(f"A {self.enemy_name} has appeared!")
@@ -79,10 +66,6 @@ class Player:
             print(f"Congratulations! You've reached level {self.level}.")
             self.player_health = self.player_max_health
             self.improve_stats()
-
-    def player_death(self):
-        print("You died!")
-        self.quit_game = True
 
     def enemy_attack_move(self):
         self.player_health -= self.enemy_attack
@@ -105,7 +88,7 @@ class Player:
         1: Attack
         2: Max Health
         """)
-        choice = int(input("Your choice: "))
+        choice = self.player_choice()
         if choice == 1:
             self.player_attack += 5
             print(f"Your attack power is now {self.player_attack}.")
@@ -114,15 +97,34 @@ class Player:
             print(f"Your maximum health is now {self.player_max_health}.")
 
     def use_potion(self):
-        if self.potions > 0:
+        if self.inventory["Potion"] > 0:
+            self.inventory["Potion"] -= 1
+            print(f"You used a potion! You now have {self.inventory['Potion']} potions.")
             self.player_attack += 5
-            self.player_max_health += 10
-            self.player_health = min(self.player_health + 20, self.player_max_health)
-            self.potions -= 1
-            print("You used a potion! Your attack and health have been increased!")
-            print(f"Attack: {self.player_attack}\nHealth: {self.player_health}\n")
+            self.player_health += 20
         else:
             print("You don't have any potions left.")
+
+    def add_potion(self):
+        self.inventory["Potion"] += 1
+        print(f"The enemy dropped a potion! You now have {self.inventory['Potion']} potions.")
+
+    def player_death(self):
+        print("You have died. Game Over.")
+        self.quit_game = True
+
+    def display_inventory(self):
+        print("Your Inventory:")
+        for item, quantity in self.inventory.items():
+            print(f"{item}: {quantity}")
+
+    def player_choice(self):
+        while True:
+            try:
+                return int(input())
+            except ValueError:
+                print("Invalid selection. Please try again.")
+
 
 def choose_class():
     print("""
@@ -133,49 +135,67 @@ def choose_class():
     """)
     class_choice = int(input("Your choice: "))
     if class_choice == 1:
-        player_class = "Mage"
+        return "Mage"
     elif class_choice == 2:
-        player_class = "Warrior"
+        return "Warrior"
     elif class_choice == 3:
-        player_class = "Rogue"
+        return "Rogue"
     else:
         print("Invalid choice. Please choose a valid class.")
-        choose_class()
-    return player_class
+        return choose_class()
 
 def start_game():
-    global player
-    player = Player(username, choose_class())
-    player.story()
+    username = input("What is your username for this run: ")
+    player_class = choose_class()
+    player = Player(username, player_class)
+    story(player)
     player.spawn_enemy()
+
     while not player.quit_game:
-        player.show_menu()
-        user_choice = int(input("What is your selection: "))
-        if user_choice == 1:
-            player.is_new_enemy = False
-            player.attack_move()
+        show_menu()
+        user_choice = input("What is your selection: ")
+        try:
+            user_choice = int(user_choice)
+            if user_choice == 1:
+                player.is_new_enemy = False
+                player.attack_move()
+            elif user_choice == 2:
+                player.is_new_enemy = False
+                player.use_shield()
+            elif user_choice == 3:
+                player.show_stats()
+            elif user_choice == 4:
+                player.use_potion()
+            elif user_choice == 5:
+                player.display_inventory()
+            elif user_choice == 6:
+                print("Thank you for playing Tower of Trial!")
+                player.quit_game = True
+            else:
+                print("Invalid selection, please try again.")
             if player.enemy_health > 0 and not player.quit_game and not player.is_new_enemy:
                 player.enemy_attack_move()
-        elif user_choice == 2:
-            player.is_new_enemy = False
-            player.use_shield()
-            if player.enemy_health > 0 and not player.quit_game and not player.is_new_enemy:
-                player.enemy_attack_move()
-        elif user_choice == 3:
-            player.show_stats()
-        elif user_choice == 4:
-            player.use_potion()
-        elif user_choice == 5:
-            print("Thank you for playing Tower of Trials!")
-            player.quit_game = True
-        else:
-            print("Invalid selection! Please choose a number from 1 to 5.")
-    play_again = input("Do you want to play again? (yes/no): ")
-    if play_again.lower() == 'yes':
-        start_game()
-    else:
-        print("Goodbye!")
+        except ValueError:
+            print("Invalid selection, please input a number.")
 
 
-username = input("What is your username for this run: ")
+def story(player):
+    print(f"""
+{player.username}, a brave {player.player_class} is on a quest to defeat the legendary creatures that inhabit the Tower of Trials. 
+Every 10th enemy in the tower is a powerful boss, but don't fear! With each enemy defeated, you gain experience and can choose to increase your attack or maximum health.
+You also have a shield that can be used to restore health, and potions that can boost your abilities. Good luck!
+    """)
+
+
+def show_menu():
+    print("""
+    What will you do:
+    1: Attack
+    2: Use Shield
+    3: Show Stats
+    4: Use Potion
+    5: Show Inventory
+    6: Quit Game
+    """)
+
 start_game()
