@@ -5,6 +5,7 @@ enemy_list = ["GorgonZola", "Goblin", "Orc", "Troll", "Imp", "Banshee", "Skeleto
 
 class Player:
     def __init__(self, username, player_class):
+        self.total_killed = 0
         self.username = username
         self.player_class = player_class
         self.quit_game = False
@@ -34,6 +35,7 @@ class Player:
             self.enemy_killed()
 
     def enemy_killed(self):
+        self.total_killed += 1
         exp_add = random.randrange(1, 20)
         print(f"The enemy has been killed, you got {exp_add} exp.")
         self.exp += exp_add
@@ -74,7 +76,7 @@ class Player:
             self.player_death()
 
     def show_stats(self):
-        print(f"\nPlayer stats:\nLevel: {self.level}\nExp: {self.exp}\nHealth: {self.player_health}\nAttack: {self.player_attack}\n")
+        print(f"\nPlayer stats:\nLevel: {self.level}\nExp: {self.exp}\nHealth: {self.player_health}\nAttack: {self.player_attack}\nTotal Killed: {self.total_killed}\n")
 
     def use_shield(self):
         self.player_health += 15
@@ -111,6 +113,7 @@ class Player:
 
     def player_death(self):
         print("You have died. Game Over.")
+        print(f"You have slayn a total of: {self.total_killed} enemies.")
         self.quit_game = True
 
     def display_inventory(self):
@@ -182,7 +185,7 @@ def start_game():
 def story(player):
     print(f"""
 {player.username}, a brave {player.player_class} is on a quest to defeat the legendary creatures that inhabit the Tower of Trials. 
-Every 10th enemy in the tower is a powerful boss, but don't fear! With each enemy defeated, you gain experience and can choose to increase your attack or maximum health.
+Every 10th enemy in the tower is a powerful boss, but don't fear! With  each enemy defeated, you gain experience and can choose to increase your attack or maximum health.
 You also have a shield that can be used to restore health, and potions that can boost your abilities. Good luck!
     """)
 
