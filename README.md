@@ -1,4 +1,4 @@
-#Tower of Trials
+# Tower of Trials
 
 Tower of Trials is a text-based RPG game written in Python, where the player's character must battle a series of enemies and bosses in order to progress through the Tower of Trials. The game emphasizes strategic decision-making, with each player action influencing the course of the battle.
 Gameplay
