@@ -5,7 +5,7 @@ from entity import Enemy, Player
 
 boss_list = ["Minotaur", "Dragon", "Lich", "Ancient God", "Demon King", "Fallen Hero"]
 enemy_list = ["GorgonZola", "Goblin", "Orc", "Troll", "Imp", "Banshee", "Skeleton", "Zombie"]
-modifier_list = ["Desecration", "Annihilation", "Doom", "Certain Doom", "Sensei Trent's Sending", "Descension", "Death", "True Evil", "Chaos Incarnate", "Unchecked Power", "Unlimited Corruption"]
+modifier_list = ["Desecration", "Annihilation", "Doom", "Certain Doom", "Sensei Trent's Sanity", "Descension", "Death", "True Evil", "Chaos Incarnate", "Unchecked Power", "Unlimited Corruption"]
 
 # Boss List is for Possible Bosses in the Game
 # Enemy List is for Possible Enemies in the Game
